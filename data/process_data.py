@@ -1,15 +1,66 @@
 import sys
+import pandas as pd
+import numpy as np
+from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
-    pass
+    """
+    Loads messages and categories datastes, merges, and returns as dataframe
+
+    INPUT: disaster_messages.csv and disaster_categories.csv
+    OUTPUT: merged datasets as dataframe
+    """
+
+    messages = pd.read_csv(messages_filepath, header=0)
+    categories = pd.read_csv(categories_filepath, header=0)
+
+    df = messages.merge(categories, how = 'outer', on = ['id'])
+
+    return df
 
 
 def clean_data(df):
-    pass
+    """
+    Cleans data to be ready for modelling.
+    Categories are split into separate category columns.
+    Category values are converted to just numbers: 0 or 1.
+    Duplicates are removed.
+    """
+
+    categories = df['categories'].str.split(';', expand = True)
+
+    # first row of the categories dataframe is extracted to create names for categories
+    row = categories.loc[1]
+    category_colnames = row.apply(lambda x: x[:-2])
+    categories.columns = category_colnames
+
+    # convert category values to just numbers
+    for column in categories:
+        # set each value to be the last character of the string
+        categories[column] = categories[column].str.strip().str[-1]
+        # convert column from string to numeric
+        categories[column] = pd.to_numeric(categories[column])
+
+    df = df.drop('categories', axis = 1)
+    df = pd.concat([df, categories], axis = 1)
+
+    # column 'related' has some values '2'
+    # those rows are excluded
+    df = df[df['related'] != 2]
+
+    df = df.drop_duplicates()
+
+    return df
 
 
 def save_data(df, database_filename):
+    """
+    Saves the clean dataframe intoa sqlite database
+    """
+    engine = create_engine('sqlite:///' + database_filename)
+    df.to_sql('messages', engine, index = False, if_exists = 'replace')
+
     pass  
 
 
