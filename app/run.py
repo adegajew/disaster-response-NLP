@@ -8,7 +8,8 @@ from nltk.tokenize import word_tokenize
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
-from sklearn.externals import joblib
+import joblib
+#from sklearn.externals import joblib
 from sqlalchemy import create_engine
 
 
@@ -26,11 +27,11 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///../data/YourDatabaseName.db')
-df = pd.read_sql_table('YourTableName', engine)
+engine = create_engine('sqlite:///../data/DisasterResponse.db')
+df = pd.read_sql_table('messages', engine)
 
 # load model
-model = joblib.load("../models/your_model_name.pkl")
+model = joblib.load("../models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
@@ -39,18 +40,31 @@ model = joblib.load("../models/your_model_name.pkl")
 def index():
     
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
+    # modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+
+    top_direct = df[df['genre'] == 'direct'].iloc[:, 4:].sum().nlargest(10).sort_values(ascending = True)
+    top_direct_names = list(top_direct.index)
+
+    top_news = df[df['genre'] == 'news'].iloc[:, 4:].sum().nlargest(10).sort_values(ascending = True)
+    top_news_names = list(top_news.index)
+
+    top_social = df[df['genre'] == 'social'].iloc[:, 4:].sum().nlargest(10).sort_values(ascending = True)
+    top_social_names = list(top_social.index)
+
+    colors = ['rgb(15, 113, 115)', 'rgb(246, 174, 45)', 'rgb(152, 38, 73)']
     
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
+    
     graphs = [
+        # VISUAL 1:
         {
             'data': [
                 Bar(
                     x=genre_names,
-                    y=genre_counts
+                    y=genre_counts,
+                    marker=dict(color=colors)
                 )
             ],
 
@@ -63,8 +77,77 @@ def index():
                     'title': "Genre"
                 }
             }
-        }
+        },
+
+        # VISUAL 2:
+        {
+            'data': [
+                Bar(
+                    x = top_direct,
+                    y = top_direct_names,
+                    orientation='h',
+                    marker = dict(color = 'rgb(15, 113, 115)')
+                )
+            ],
+
+            'layout': {
+                'title': 'Top 10 categories of DIRECT messages',
+                #'yaxis': {
+                #    'title': "Category"
+                #},
+                'xaxis': {
+                    'title': "number of messages"
+                }
+            }
+        },
+
+        # VISUAL 3
+        {
+            'data': [
+                Bar(
+                    x = top_news,
+                    y = top_news_names,
+                    orientation='h',
+                    marker = dict(color = 'rgb(246, 174, 45)')
+                )
+            ],
+
+            'layout': {
+                'title': 'Top 10 categories of NEWS messages',
+                #'yaxis': {
+                #    'title': "Category"
+                #},
+                'xaxis': {
+                    'title': "number of messages"
+                }
+            }
+        },
+
+        # VISUAL 4
+        {
+            'data': [
+                Bar(
+                    x = top_social,
+                    y = top_social_names,
+                    orientation='h',
+                    marker = dict(color = 'rgb(152, 38, 73)')
+                )
+            ],
+
+            'layout': {
+                'title': 'Top 10 categories of NEWS messages',
+                #'yaxis': {
+                #    'title': "Category"
+                #},
+                'xaxis': {
+                    'title': "number of messages"
+                }
+            }
+        },
+
+    
     ]
+    
     
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
