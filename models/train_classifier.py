@@ -1,23 +1,123 @@
 import sys
+import pandas as pd
+import numpy as np
+from sqlalchemy import create_engine
+import re
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+
+import nltk
+nltk.download('punkt', 'stopwords', 'wordnet', 'omw-1.4')
+
+from nltk.stem.porter import PorterStemmer
+from nltk.stem.wordnet import WordNetLemmatizer
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.metrics import classification_report
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
+
+import pickle
 
 
 def load_data(database_filepath):
-    pass
+    """
+    Loads data from the database and creates two data frames: X, Y.
+    INPUT: filepath to SQLite database.
+    OUTPUT: X - data frame storing input variable: message
+            Y - data frame storing output variables: 36 categories
+            category_names - names of 36 categories
+    """
+
+    engine = create_engine('sqlite:///' + database_filepath)
+    df = pd.read_sql('messages', con = engine)
+
+    X = df['message'] 
+    Y = df.iloc[:, 4:]
+    category_names = Y.columns
+
+    return X, Y, category_names
 
 
 def tokenize(text):
-    pass
+    """
+    Processes text data.
+    Includes: punctuation removal, tokenization, stop word removal,
+            stemming and lemmatization.
+    """
+    # punctuation removal:
+    text = re.sub(r'[^a-zA-Z0-9]', ' ', text)
+    # tokenization:
+    tokens = word_tokenize(text)
+    # stop word removal:
+    tokens = [t for t in tokens if t not in stopwords.words("english")]
+    # stemming and lemmatization:
+    stem = PorterStemmer()
+    lem = WordNetLemmatizer()
+
+    clean_tokens = []
+    for tok in tokens: 
+        clean_tok = stem.stem(tok)
+        clean_tok = lem.lemmatize(tok).lower().strip()
+        clean_tokens.append(clean_tok)   
+    
+    return clean_tokens
 
 
 def build_model():
-    pass
+    """
+    Pipeline with ML model to classify input data.
+    Algorithm used is AdaBoostClassifier with DecisionTreeClassifier as base estimator.
+    Grid Search CV on selected parameters.
+    """
+
+    pipeline = Pipeline([
+        ('vect', CountVectorizer(tokenizer = tokenize)),
+        ('tfidf', TfidfTransformer()),
+        ('clf', MultiOutputClassifier(AdaBoostClassifier(base_estimator = DecisionTreeClassifier()))),
+    ])
+
+    parameters = {
+        'clf__estimator__base_estimator__max_depth': [1, 2]
+        #'clf__estimator__base_estimator__min_samples_split': [2, 5],
+        #'clf__estimator__learning_rate': [0.01, 0.1, 1.0, 1.2]
+    }
+
+    model = GridSearchCV(pipeline, param_grid = parameters)
+
+    return model
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    """
+    Prints classification reports in summary and detailed form.
+    """
+
+    y_pred = model.predict(X_test)
+
+    # summary classification report
+    print(classification_report(Y_test, y_pred, target_names = category_names, zero_division = 0))
+
+    # detailed classification report
+    for i in range(len(category_names)):
+        print(category_names[i])
+        print(classification_report(Y_test.iloc[:, i], y_pred[:, i], zero_division = 0))
+
     pass
 
 
 def save_model(model, model_filepath):
+    """
+    Exports the model as a pickle file.
+    """
+
+    with open(model_filepath,'wb') as f:
+        pickle.dump(model,f)
+
     pass
 
 

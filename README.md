@@ -19,7 +19,14 @@ Jupyter notebooks ETL Pipeline Preparation & ML Pipeline Preparation are for ini
 
 💥 data -  this folder contains:
 + datasets: disaster_categories.csv, disaster_messages.csv
-+ process_data.py with ETL pipeline that cleans data
++ process_data.py with ETL pipeline that cleans data and creates database DisasterResponse.db
+
+💥 models - this folder contains:
++ train_classifier.py with ML pipeline that trains a model and saves it as 
+
+💥 app - this folder contains
++ templates 
++ run.py 
 
 ## Prerequisites
 Anaconda distribution of Python 3.*.
@@ -31,13 +38,15 @@ NLTK data preparation part requires additional downloads:
 - nltk.download('omw-1.4')
 
 ## Installation
-1. Run the following commands in the project's root directory:
+1. Go to the project's root directory `cd` and run the following commands:
 - To run ETL pipeline that cleans data and stores in database
         `python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db`
 - To run ML pipeline that trains classifier and saves it to pickle
         `python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl`
 
-In order to run a web app type in the command line: python run.py
+2. In order to run a web app: 
+- Go to the app root directory and type in the command line: `python run.py`
+- when running locally go to
 
 ## Acknowledgments
 Data sets and idea for the project were provided by [Udacity](https://www.udacity.com/).
