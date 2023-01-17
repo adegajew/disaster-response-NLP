@@ -7,7 +7,7 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
 import nltk
-nltk.download('punkt', 'stopwords', 'wordnet', 'omw-1.4')
+#nltk.download('punkt', 'stopwords', 'wordnet', 'omw-1.4')
 
 from nltk.stem.porter import PorterStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
