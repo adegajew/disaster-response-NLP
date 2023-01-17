@@ -47,7 +47,10 @@ def tokenize(text):
     """
     Processes text data.
     Includes: punctuation removal, tokenization, stop word removal,
-            stemming and lemmatization.
+            and lemmatization.
+
+    INPUT: text data to be processed
+    OUTPUT: text data in a format ready for modelling
     """
     # punctuation removal:
     text = re.sub(r'[^a-zA-Z0-9]', ' ', text)
@@ -55,13 +58,12 @@ def tokenize(text):
     tokens = word_tokenize(text)
     # stop word removal:
     tokens = [t for t in tokens if t not in stopwords.words("english")]
-    # stemming and lemmatization:
-    stem = PorterStemmer()
+    # lemmatization:
+    #stem = PorterStemmer() # both stemming and lemmatization should not be used
     lem = WordNetLemmatizer()
 
     clean_tokens = []
     for tok in tokens: 
-        clean_tok = stem.stem(tok)
         clean_tok = lem.lemmatize(tok).lower().strip()
         clean_tokens.append(clean_tok)   
     
@@ -95,6 +97,7 @@ def build_model():
 def evaluate_model(model, X_test, Y_test, category_names):
     """
     Prints classification reports in summary and detailed form.
+    INPUT: model, X test data, Y test data, category names taken from Y data
     """
 
     y_pred = model.predict(X_test)
@@ -113,6 +116,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
 def save_model(model, model_filepath):
     """
     Exports the model as a pickle file.
+    INPUT: model and a filepath where the model should be saved.
     """
 
     with open(model_filepath,'wb') as f:
