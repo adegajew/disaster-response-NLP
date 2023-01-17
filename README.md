@@ -7,6 +7,7 @@ This project was done as a part of data science/ ML course. The idea is to class
 - [File Descriptions](#file-descriptions)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
+- [How To Use](#howtouse)
 - [Acknowledgments](#acknowledgments)
 
 ## About
@@ -22,11 +23,11 @@ Jupyter notebooks ETL Pipeline Preparation & ML Pipeline Preparation are for ini
 + process_data.py with ETL pipeline that cleans data and creates database DisasterResponse.db
 
 💥 models - this folder contains:
-+ train_classifier.py with ML pipeline that trains a model and saves it as 
++ train_classifier.py with ML pipeline that trains a model and saves it as classifier.pkl
 
 💥 app - this folder contains
-+ templates 
-+ run.py 
++ templates with html scripts
++ run.py with python script (front-end is deployed using Flask library)
 
 ## Prerequisites
 Anaconda distribution of Python 3.*.
@@ -45,8 +46,16 @@ NLTK data preparation part requires additional downloads:
         `python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl`
 
 2. In order to run a web app: 
-- Go to the app root directory and type in the command line: `python run.py`
-- when running locally go to
+- Go to the app root directory `cd` and type in the command line: `python run.py`
+- If running locally go to http://localhost:3001/
+
+## How To Use
+User can input a new message and recive classification results that are based on ML algorithm: 
+
+
+There is also a graphical summary of the training dataset. The upper bar chart shows how many messages were sourced from social media, news or direct. The bar charts below show top 10 most common categories per genre:
+
+
 
 ## Acknowledgments
 Data sets and idea for the project were provided by [Udacity](https://www.udacity.com/).
