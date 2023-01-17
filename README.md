@@ -7,7 +7,7 @@ This project was done as a part of data science/ ML course. The idea is to class
 - [File Descriptions](#file-descriptions)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [How To Use](#howtouse)
+- [How To Use](#how-to-use)
 - [Acknowledgments](#acknowledgments)
 
 ## About
@@ -51,11 +51,12 @@ NLTK data preparation part requires additional downloads:
 
 ## How To Use
 User can input a new message and recive classification results that are based on ML algorithm: 
+![classify_message](https://user-images.githubusercontent.com/73932649/212842225-b893607c-1ea5-4d79-bc7e-cb5ce8ca2532.png)
 
 
 There is also a graphical summary of the training dataset. The upper bar chart shows how many messages were sourced from social media, news or direct. The bar charts below show top 10 most common categories per genre:
 
-
+![training_dataset_overview](https://user-images.githubusercontent.com/73932649/212842269-4dea4497-3363-4729-8567-24d335c5c171.png)
 
 ## Acknowledgments
 Data sets and idea for the project were provided by [Udacity](https://www.udacity.com/).
