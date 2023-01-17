@@ -26,6 +26,10 @@ def clean_data(df):
     Categories are split into separate category columns.
     Category values are converted to just numbers: 0 or 1.
     Duplicates are removed.
+
+    INPUT: dataframe with loaded data 
+
+    OUTPUT: dataframe with clean category data
     """
 
     categories = df['categories'].str.split(';', expand = True)
@@ -51,12 +55,15 @@ def clean_data(df):
 
     df = df.drop_duplicates()
 
+    # sanity check
+    assert len(df[df.duplicated()]) == 0
+
     return df
 
 
 def save_data(df, database_filename):
     """
-    Saves the clean dataframe intoa sqlite database
+    Saves the clean dataframe intoa sqlite database.
     """
     engine = create_engine('sqlite:///' + database_filename)
     df.to_sql('messages', engine, index = False, if_exists = 'replace')
